@@ -20,7 +20,7 @@ function renderWinningСombinations(numberCells) {
     // Формируем выигрышные комбинации по строкам и столбцам
     let storage = [];
 
-    let flatPlayingField = playingField.flat();
+    let flatPlayingField = playingField.slice().flat();
 
     flatPlayingField.flat().forEach((item, index) => {
       storage.push(index);
@@ -53,8 +53,9 @@ function renderWinningСombinations(numberCells) {
 
 function startGame() {
 
-  // Перед каждой игрой очищаем поле
+  // Перед каждой игрой очищаем поле и выигрышные комбинации
   playingField = [];
+  winningСombinations = [];
 
   let numberCells;
   // Это задел, если дать пользователю выбирать кол-во ячеек для игры
