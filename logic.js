@@ -1,3 +1,5 @@
+'use strict'
+
 let players = ["x", "o"];
 
 let activePlayer = 0;
@@ -35,23 +37,21 @@ function renderWinningСombinations(number) {
     }
   });
 
-  // // Формируем выигрышные комбинации по столбцам
-  // flatPlayingBoard.forEach((item, index) => {
-  //   storage.push(index);
+  // Формируем выигрышные комбинации по столбцам
+  let sliceWinningСombinations = winningСombinations.slice();
 
-  //   if (storage.length === number) {
-  //     winningСombinations.push(storage);
-  //     storage = [];
-  //   }
-  // });
+  for (let index = 0; index < sliceWinningСombinations.slice().length; index++) {
+    sliceWinningСombinations.forEach(el => {
+      storage.push(el[index]);
+    });
+
+    winningСombinations.push(storage);
+    storage = [];
+  }
 
 
   // Формируем выигрышную комбинацию по диагонали с лева на право
-  for (
-    let index = 0;
-    index < flatPlayingBoard.length;
-    index += number + 1
-  ) {
+  for (let index = 0; index < flatPlayingBoard.length; index += number + 1) {
     storage.push(index);
   }
 
@@ -69,29 +69,29 @@ function renderWinningСombinations(number) {
 
 
 function startGame() {
-  // Перед каждой игрой очищаем поле, выигрышные комбинации и всегда игру начинает 1й игрок('Х')
+  // Перед каждой игрой очищаем поле, выигрышные комбинации, игру начинает 1й игрок('Х')
   playingBoard = [];
   winningСombinations = [];
   activePlayer = 0;
 
-  // Это задел, что дать пользователю выбирать кол-во ячеек для поля
+  // Это задел, что бы дать пользователю выбрать кол-во ячеек для игрового поля.
+  // Закомментировано, тк не требуется по ТЗ
   // numberCells = prompt("Введите числом количество ячеек от 3 и более:");
 
   numberCells = checkNumberCellsPerRow(numberCells);
 
   let line = Array(numberCells).fill("");
 
-  // Для ускорения цикла используется модуль из языка C++
+  // Для ускорения цикла используется модуль из языка C++ :)
   for (let c = 0; c < numberCells; c++) {
     playingBoard.push(line.slice());
   }
 
   renderBoard(playingBoard);
+  console.log('Стартовое поле=>', playingBoard);
 
   renderWinningСombinations(numberCells);
-  console.log(winningСombinations);
-
-  players[activePlayer];
+  console.log('Выигрышные комбинации=>', winningСombinations);
 }
 
 
@@ -102,14 +102,14 @@ function click(line, column) {
 
   let chekWin = checkWinner(players[activePlayer]);
 
-  console.log(`check=>${chekWin}`);
+  if (chekWin) {
+    showWinner(activePlayer);
+  }
 
-
-  // showWinner(activePlayer);
-
-  // if (chekWin) {
-  //   showWinner(players[activePlayer]);
-  // }
+  // Делаем проверку на ничью и выводим сообщение по подобию fn showWinner()
+  if (!playingBoard.flat().includes('')) {
+    showDraw();
+  }
 
   activePlayer = activePlayer === 0 ? 1 : 0;
 }
@@ -124,7 +124,7 @@ function checkWinner(player) {
     }
   });
 
-  for (elWinningCombination of winningСombinations) {
+  for (let elWinningCombination of winningСombinations) {
 
     let numberMatches = 0;
 
@@ -134,9 +134,18 @@ function checkWinner(player) {
         numberMatches++;
       }
 
-      if (numberMatches === numberCells){
-        console.log(`победили ${player}`);
-      }
+      if (numberMatches === 0) return false;
     });
+
+    if (numberMatches === numberCells) return true;
   }
+
+  return false;
+}
+
+
+function showDraw() {
+  let header = modalEl.getElementsByTagName('h2')[0];
+  header.textContent = ` Ничья! `;
+  modalEl.classList.remove('hidden');
 }
