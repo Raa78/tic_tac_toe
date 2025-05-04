@@ -15,6 +15,7 @@ function checkNumberCellsPerRow(numberCells) {
   return numberCells;
 }
 
+
 function renderWinningСombinations(numberCells) {
 
     // Формируем выигрышные комбинации по строкам и столбцам
@@ -41,7 +42,7 @@ function renderWinningСombinations(numberCells) {
     storage = [];
 
     // Формируем выигрышную комбинацию по диагонали с право yf ktdj
-    for (let index = numberCells - 1; index < flatPlayingField.length - 1 ; index += numberCells-1) {
+    for (let index = numberCells - 1; index < flatPlayingField.length - 1 ; index += numberCells - 1) {
       storage.push(index);
     }
 
@@ -78,6 +79,7 @@ function startGame() {
   players[activePlayer];
 }
 
+
 function click(line, column) {
 
   playingField[line][column] = players[activePlayer];
@@ -85,7 +87,6 @@ function click(line, column) {
   renderBoard(playingField);
 
   // showWinner(activePlayer);
-
 
   activePlayer = activePlayer === 0 ? 1 : 0;
 }
