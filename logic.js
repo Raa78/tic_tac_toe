@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 let players = ["x", "o"];
 
@@ -11,65 +11,14 @@ let winningСombinations = [];
 let numberCells = null;
 
 
-function checkNumberCellsPerRow(number) {
-  if (isNaN(number)) {
-    return 3;
-  }
-
-  number = +number < 3 ? 3 : +number;
-
-  return number;
-}
-
-
-function renderWinningСombinations(number) {
-  let storage = [];
-
-  let flatPlayingBoard = playingBoard.slice().flat();
-
-  // Формируем выигрышные комбинации по строкам
-  flatPlayingBoard.forEach((item, index) => {
-    storage.push(index);
-
-    if (storage.length === number) {
-      winningСombinations.push(storage);
-      storage = [];
-    }
-  });
-
-  // Формируем выигрышные комбинации по столбцам
-  let sliceWinningСombinations = winningСombinations.slice();
-
-  for (let index = 0; index < sliceWinningСombinations.slice().length; index++) {
-    sliceWinningСombinations.forEach(el => {
-      storage.push(el[index]);
-    });
-
-    winningСombinations.push(storage);
-    storage = [];
-  }
-
-
-  // Формируем выигрышную комбинацию по диагонали с лева на право
-  for (let index = 0; index < flatPlayingBoard.length; index += number + 1) {
-    storage.push(index);
-  }
-
-  winningСombinations.push(storage);
-  storage = [];
-
-  // Формируем выигрышную комбинацию по диагонали с право на лево
-  for (let index = number - 1; index < flatPlayingBoard.length - 1; index += number - 1) {
-    storage.push(index);
-  }
-
-  winningСombinations.push(storage);
-  storage = [];
-}
-
-
+/**
+ * Стартовая функция
+ * Обнуляет значения перед игрой - поле, выигрышные комбинации, стартового игрока.
+ * Создает игровое поле - массив массивов.
+ * Вызвать функцию renderBoard для отрисовки игрового поля.
+ */
 function startGame() {
-  // Перед каждой игрой очищаем поле, выигрышные комбинации, игру начинает 1й игрок('Х')
+  // Очищаем поле, выигрышные комбинации, игру всегда начинает 1й игрок('Х')
   playingBoard = [];
   winningСombinations = [];
   activePlayer = 0;
@@ -95,6 +44,73 @@ function startGame() {
 }
 
 
+/**
+ * Функция проверяет является ли переданное значение числом
+ * @param {number} number
+ */
+function checkNumberCellsPerRow(number) {
+  if (isNaN(number)) return 3;
+
+  number = +number < 3 ? 3 : +number;
+
+  return number;
+}
+
+
+/**
+ * Функция автоматически формирует выигрышные комбинации на основании размера поля
+ * @param {number} number - количество ячеек в строке и столбце
+ */
+function renderWinningСombinations(number) {
+  let storage = [];
+
+  let flatPlayingBoard = playingBoard.slice().flat();
+
+  // Формируем выигрышные комбинации по строкам
+  flatPlayingBoard.forEach((item, index) => {
+    storage.push(index);
+
+    if (storage.length === number) {
+      winningСombinations.push(storage);
+      storage = [];
+    }
+  });
+
+  // Формируем выигрышные комбинации по столбцам на основе массива комбинаций по строкам
+  let sliceWinningСombinations = winningСombinations.slice();
+
+  for (let index = 0; index < sliceWinningСombinations.slice().length; index++) {
+    sliceWinningСombinations.forEach(el => {
+      storage.push(el[index]);
+    });
+
+    winningСombinations.push(storage);
+    storage = [];
+  }
+
+  // Формируем выигрышную комбинацию по диагонали с лева на право
+  for (let index = 0; index < flatPlayingBoard.length; index += number + 1) {
+    storage.push(index);
+  }
+
+  winningСombinations.push(storage);
+  storage = [];
+
+  // Формируем выигрышную комбинацию по диагонали с право на лево
+  for (let index = number - 1; index < flatPlayingBoard.length - 1; index += number - 1) {
+    storage.push(index);
+  }
+
+  winningСombinations.push(storage);
+  storage = [];
+}
+
+
+/**
+ * Функция проставляет ходы на поле и определяет победителя
+ * @param {number} line - строка на поле
+ * @param {number} column - столбец на поле
+ */
 function click(line, column) {
   playingBoard[line][column] = players[activePlayer];
 
@@ -115,6 +131,11 @@ function click(line, column) {
 }
 
 
+/**
+ * Функция проставляет ходы на поле и определяет победителя
+ * @param {number} player - номер игрока
+ * @returns {boolean}
+ */
 function checkWinner(player) {
   let filledСells = [];
 
@@ -125,14 +146,10 @@ function checkWinner(player) {
   });
 
   for (let elWinningCombination of winningСombinations) {
-
     let numberMatches = 0;
 
     elWinningCombination.forEach(num => {
-
-      if (filledСells.includes(num)) {
-        numberMatches++;
-      }
+      if (filledСells.includes(num)) numberMatches++;
 
       if (numberMatches === 0) return false;
     });
@@ -144,8 +161,13 @@ function checkWinner(player) {
 }
 
 
+/**
+ * Функция выводит на экран сообщение, если результат - ничья
+ */
 function showDraw() {
   let header = modalEl.getElementsByTagName('h2')[0];
-  header.textContent = ` Ничья! `;
+
+  header.textContent = `🤝 Ничья! 🤝`;
+
   modalEl.classList.remove('hidden');
 }
